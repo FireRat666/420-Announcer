@@ -31,8 +31,13 @@ async function fetchBlazingData() {
         audioLinksContainer.innerHTML = "";
     } finally {
         lastUpdatedElement.textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
-        // Poll every minute (10 seconds)
-        setTimeout(fetchBlazingData, 10000);
+        if (data.timeRemainingSeconds < 60) {
+          // Poll every second with less than a minute until 420
+          setTimeout(fetchBlazingData, 1000);
+        } else {
+          // Poll every (30 seconds)
+          setTimeout(fetchBlazingData, 30000);
+        }
     }
 }
 
