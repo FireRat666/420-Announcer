@@ -32,7 +32,7 @@ async function fetchBlazingData() {
     } finally {
         lastUpdatedElement.textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
         // Poll every minute (10 seconds)
-        setTimeout(fetchBlazingData, 1000);
+        setTimeout(fetchBlazingData, 10000);
     }
 }
 
