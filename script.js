@@ -31,7 +31,7 @@ async function fetchBlazingData() {
         audioLinksContainer.innerHTML = "";
     } finally {
         lastUpdatedElement.textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
-        if (data.timeRemainingSeconds < 60) {
+        if (lastFetchedData.timeRemainingSeconds < 60) {
           // Poll every second with less than a minute until 420
           setTimeout(fetchBlazingData, 1000);
         } else {
