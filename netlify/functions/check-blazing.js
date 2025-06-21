@@ -18,8 +18,11 @@ exports.handler = async (event, context) => {
 
     function checkDiff(time, zone) {
         const diff = time.diff(moment.tz(zone));
+        // We ensure diff is > -59000 ms, so we don't pick past 4:20s unless they just passed
+        // The Math.abs(diff - _shortestDiff) <= 1000 part is for handling multiple timezones
+        // that are extremely close, effectively in the "same moment" for 4:20.
         if (diff > -59000 && (_shortestDiff === undefined || diff < _shortestDiff || Math.abs(diff - _shortestDiff) <= 1000)) {
-            if (Math.abs(diff - _shortestDiff) > 1000) {
+            if (Math.abs(diff - _shortestDiff) > 1000) { // If the new diff is significantly shorter, reset
                 _420Timezones = [];
             }
             _420Timezones.push(zone);
@@ -31,9 +34,20 @@ exports.handler = async (event, context) => {
     const zones = moment.tz.names().map(function (k) { return k.split('|')[0]; }).filter(function (z) { return z.indexOf('/') >= 0 && !z.startsWith("Etc/"); });
 
     for (const zone of zones) {
-        const morningBlazeTime = moment.tz(zone).set("hour", 4).set("minute", 20).set("seconds", 0);
+        // Calculate 4:20 AM
+        const morningBlazeTime = moment.tz(zone).set("hour", 4).set("minute", 20).set("second", 0).set("millisecond", 0);
+        // If it's already past 4:20 AM today, set it to 4:20 AM tomorrow
+        if (morningBlazeTime.isBefore(moment.tz(zone).subtract(59, 'seconds'))) { // Allow for some buffer past current time
+             morningBlazeTime.add(1, 'day');
+        }
         checkDiff(morningBlazeTime, zone);
-        const eveningBlazeTime = moment.tz(zone).set("hour", 16).set("minute", 20).set("seconds", 0);
+
+        // Calculate 4:20 PM
+        const eveningBlazeTime = moment.tz(zone).set("hour", 16).set("minute", 20).set("second", 0).set("millisecond", 0);
+         // If it's already past 4:20 PM today, set it to 4:20 PM tomorrow
+        if (eveningBlazeTime.isBefore(moment.tz(zone).subtract(59, 'seconds'))) { // Allow for some buffer past current time
+            eveningBlazeTime.add(1, 'day');
+        }
         checkDiff(eveningBlazeTime, zone);
     }
 
@@ -45,18 +59,18 @@ exports.handler = async (event, context) => {
     const outCities = cities.sort((a, b) => b.pop - a.pop).slice(0, 25).map(c => c.city + ", " + c.country);
     
     // --- START: Changes for deterministic location selection ---
-    // Generate a seed based on the _next420 exact timestamp.
-    // This makes the random choice repeatable for the same 4:20 event.
-    const seed = _next420.valueOf(); // Get milliseconds since epoch as the seed
+    // Generate a seed based on the _next420 time, rounded to the minute.
+    // This makes the random choice repeatable for the same 4:20 event (e.g., 3:20 PM UTC).
+    // Using .startOf('minute').valueOf() ensures consistency even if milliseconds vary slightly.
+    const seed = _next420.startOf('minute').valueOf(); 
 
     // Simple Linear Congruential Generator (LCG) for reproducible randomness
     // Source: https://en.wikipedia.org/wiki/Linear_congruential_generator
     let currentSeed = seed;
     function seededRandom() {
-        // These constants are commonly used for LCGs
         const a = 1103515245;
         const c = 12345;
-        const m = 2**31; // Modulus for 32-bit integer
+        const m = 2**31; 
 
         currentSeed = (a * currentSeed + c) % m;
         return currentSeed / m; // Normalize to [0, 1)
@@ -81,14 +95,6 @@ exports.handler = async (event, context) => {
     if (locations.includes(location)) {
         locationLink = `${AudLink}${encodeURIComponent(location.replace('/', '_'))}.mp3`;
     }
-
-    // --- START: Deterministic messageLinks selection ---
-    // Use the same seededRandom for message selection too, for consistency.
-    // Reset the seed for message selection if you want a different "random" sequence
-    // for messages than for location, but still repeatable for the same 4:20 event.
-    // For simplicity, we'll continue using the same currentSeed which was influenced by location picking.
-    // If you want completely independent random number streams, you'd re-initialize currentSeed = seed;
-    // However, for consistency of the _entire_ response for a given _next420, it's better to keep it flowing.
 
     const nextBlazeMessages = [
         [`${AudLink}Get%20your%20lighters%20ready.mp3`, locationLink, `${AudLink}blaze%20time%20kicks%20off%20in.mp3`, timeMinsLink, `${AudLink}minutes.mp3`],
@@ -129,18 +135,23 @@ exports.handler = async (event, context) => {
 
     let messageType = "nextBlaze"; // Default message type
     // Use seededRandom for message selection as well
+    // Reset the seed before choosing the message if you want the message selection to be independent
+    // of the location selection (but still deterministic based on _next420).
+    // For this, we'll re-initialize currentSeed with the original seed.
+    currentSeed = seed; // Re-initialize for message selection
     let messageLinks = nextBlazeMessages[Math.floor(seededRandom() * nextBlazeMessages.length)];
 
     if (timeSecs <= 0 && timeSecs > -60) {
         // It's currently 4:20 in some timezone
         messageType = "blazeItNow";
+        currentSeed = seed; // Re-initialize for message selection
         messageLinks = blazeItMessages[Math.floor(seededRandom() * blazeItMessages.length)];
     } else if (timeMins <= WARNING_MINS && timeMins > 0) {
         // It's in the warning window
         messageType = "blazeItWarning";
+        currentSeed = seed; // Re-initialize for message selection
         messageLinks = blazeItMessages[Math.floor(seededRandom() * blazeItMessages.length)];
     }
-    // --- END: Deterministic messageLinks selection ---
 
     return {
         statusCode: 200,
