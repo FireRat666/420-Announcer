@@ -1,0 +1,16 @@
+{
+  "name": "check-blazing-function",
+  "version": "1.0.0",
+  "description": "Netlify function to find next 4:20 time",
+  "main": "check-blazing.js",
+  "dependencies": {
+    "moment-timezone": "^0.5.45",
+    "city-timezones": "^1.2.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

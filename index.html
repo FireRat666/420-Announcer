@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>4:20 Global Tracker</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 600px;
+            width: 90%;
+        }
+        h1 {
+            color: #4CAF50;
+        }
+        #status-message {
+            margin-top: 20px;
+            font-size: 1.1em;
+            color: #555;
+        }
+        #audio-links-container {
+            margin-top: 15px;
+            text-align: left;
+            word-wrap: break-word; /* Ensures long links break */
+        }
+        #audio-links-container p {
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+        .audio-link {
+            color: #007bff;
+            text-decoration: none;
+            word-break: break-all;
+        }
+        .audio-link:hover {
+            text-decoration: underline;
+        }
+        #last-updated {
+            margin-top: 20px;
+            font-size: 0.8em;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Global 4:20 Tracker</h1>
+        <p>Find out when and where the next 4:20 is happening around the globe!</p>
+        <div id="status-message">Loading...</div>
+        <div id="audio-links-container">
+            </div>
+        <p id="last-updated"></p>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
