@@ -60,8 +60,8 @@ function updateDisplay(data) {
 
     linksHtml += `<p><strong>Audio Sequence:</strong></p>`;
     if (messageLinks && messageLinks.length > 0) {
-        messageLinks.forEach((link, index) => {
-            linksHtml += `<p>${index + 1}: <a class="audio-link" href="${link}" target="_blank">${link}</a></p>`;
+        messageLinks.forEach((link) => {
+            linksHtml += `<p><a class="audio-link" href="${link}" target="_blank">${link}</a></p>`;
         });
     } else {
         linksHtml += `<p>No audio links available.</p>`;
