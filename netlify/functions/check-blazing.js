@@ -147,7 +147,7 @@ exports.handler = async (event, context) => {
         // It's currently 4:20 in some timezone
         messageType = "blazeItNow";
         messageLinks = blazeItMessages[Math.floor(seededRandom() * blazeItMessages.length)];
-    } else if (timeMins <= WARNING_MINs && timeMins > 0) {
+    } else if (timeMins <= WARNING_MINS && timeMins > 0) {
         // It's in the warning window
         messageType = "blazeItWarning";
         messageLinks = blazeItMessages[Math.floor(seededRandom() * blazeItMessages.length)];
