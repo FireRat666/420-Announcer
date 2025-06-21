@@ -68,10 +68,9 @@ function updateDisplay(data) {
     }
 
     // You can also display the raw links if needed for debugging
-    linksHtml += `<p><strong>Raw Links Generated:</strong></p>`;
-    linksHtml += `<p>Time Mins Link: <a class="audio-link" href="${data.rawTimeMinsLink}" target="_blank">${data.rawTimeMinsLink}</a></p>`;
-    linksHtml += `<p>Location Link: <a class="audio-link" href="${data.rawLocationLink}" target="_blank">${data.rawLocationLink}</a></p>`;
-
+    // linksHtml += `<p><strong>Raw Links Generated:</strong></p>`;
+    // linksHtml += `<p>Time Mins Link: <a class="audio-link" href="${data.rawTimeMinsLink}" target="_blank">${data.rawTimeMinsLink}</a></p>`;
+    // linksHtml += `<p>Location Link: <a class="audio-link" href="${data.rawLocationLink}" target="_blank">${data.rawLocationLink}</a></p>`;
 
     audioLinksContainer.innerHTML = linksHtml;
 }
