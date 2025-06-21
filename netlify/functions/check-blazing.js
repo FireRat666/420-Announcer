@@ -114,7 +114,7 @@ exports.handler = async (event, context) => {
         [`${AudLink}Time%20to%20glow%20Meet%20us%20at.mp3`, locationLink, `${AudLink}in.mp3`, timeMinsLink, `${AudLink}minutes.mp3`]
     ];
 
-    const blazeItMessages = [
+    const blazeItWarningMessages = [ // Renamed from blazeItMessages
         [`${AudLink}It’s%20almost%20time%20to%20torch%20it.mp3`, locationLink, `${AudLink}minutes%20til%20420.mp3`, timeMinsLink],
         [`${AudLink}Hey.mp3`, locationLink, `${AudLink}420’s%20about%20to%20hit%20in.mp3`, timeMinsLink, `${AudLink}minutes%20get%20hyped.mp3`],
         [`${AudLink}in.mp3`, timeMinsLink, `${AudLink}minutes.mp3`, locationLink, `${AudLink}will%20be%20cloud%20central%20for%20420%20vibes.mp3`],
@@ -133,6 +133,20 @@ exports.handler = async (event, context) => {
         [`${AudLink}It's%204%2020%20in.mp3`, locationLink, `${AudLink}in.mp3`, timeMinsLink, `${AudLink}mins!%20Blaze%20it!.mp3`]
     ];
 
+    const blazeItNowMessages = [ // New messages for when it's exactly 4:20
+        [`${AudLink}It's%20420%20in.mp3`, locationLink, `${AudLink}now%20blaze%20it.mp3`],
+        [`${AudLink}The%20time%20has%20come%20for%20420%20in.mp3`, locationLink, `${AudLink}spark%2it%200up.mp3`],
+        [`${AudLink}420%20is%20upon%20us%20in.mp3`, locationLink, `${AudLink}enjoy%20the%20moment.mp3`],
+        [`${AudLink}It's%20blaze%20time%20in.mp3`, locationLink, `${AudLink}take%20a%20hit.mp3`],
+        [`${AudLink}Happy%20420%20to.mp3`, locationLink, `${AudLink}let%20the%20good%20times%20roll.mp3`],
+        [`${AudLink}420%20has%20arrived%20in.mp3`, locationLink, `${AudLink}light%20it%20up.mp3`],
+        [`${AudLink}The%20moment%20is%20here%20in.mp3`, locationLink, `${AudLink}it's%20420.mp3`],
+        [`${AudLink}Time%20to%20vibe%20It's%20420%20in.mp3`, locationLink, `${AudLink}right%20now.mp3`],
+        [`${AudLink}Get%20your%20groove%20on%20It's%20420%20in.mp3`, locationLink, `${AudLink}enjoy.mp3`],
+        [`${AudLink}It's%20420%20in.mp3`, locationLink, `${AudLink}The%20time%20has%20come.mp3`]
+    ];
+
+
     let messageType = "nextBlaze"; // Default message type
     let messageLinks; // Declare messageLinks here, but don't assign yet
 
@@ -146,11 +160,11 @@ exports.handler = async (event, context) => {
     if (timeSecs <= 0 && timeSecs > -60) {
         // It's currently 4:20 in some timezone
         messageType = "blazeItNow";
-        messageLinks = blazeItMessages[Math.floor(seededRandom() * blazeItMessages.length)];
+        messageLinks = blazeItNowMessages[Math.floor(seededRandom() * blazeItNowMessages.length)]; // Use new blazeItNowMessages
     } else if (timeMins <= WARNING_MINS && timeMins > 0) {
         // It's in the warning window
         messageType = "blazeItWarning";
-        messageLinks = blazeItMessages[Math.floor(seededRandom() * blazeItMessages.length)];
+        messageLinks = blazeItWarningMessages[Math.floor(seededRandom() * blazeItWarningMessages.length)]; // Use blazeItWarningMessages
     } else {
         // Otherwise, it's a regular "nextBlaze" message
         messageLinks = nextBlazeMessages[Math.floor(seededRandom() * nextBlazeMessages.length)];
