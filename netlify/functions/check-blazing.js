@@ -65,7 +65,7 @@ exports.handler = async (event, context) => {
     const seed = _next420.startOf('minute').valueOf(); 
 
     // Simple Linear Congruential Generator (LCG) for reproducible randomness
-    // Source: https://en.wikipedia.org/wiki/Linear_congruential_generator
+    // Source: https://en.wikipedia.org/wiki/Linear_Congruential_Generator
     let currentSeed = seed;
     function seededRandom() {
         const a = 1103515245;
@@ -134,23 +134,26 @@ exports.handler = async (event, context) => {
     ];
 
     let messageType = "nextBlaze"; // Default message type
+    let messageLinks; // Declare messageLinks here, but don't assign yet
+
     // Use seededRandom for message selection as well
     // Reset the seed before choosing the message if you want the message selection to be independent
     // of the location selection (but still deterministic based on _next420).
     // For this, we'll re-initialize currentSeed with the original seed.
     currentSeed = seed; // Re-initialize for message selection
-    let messageLinks = nextBlazeMessages[Math.floor(seededRandom() * nextBlazeMessages.length)];
 
+    // Determine messageType first, then select messageLinks based on it
     if (timeSecs <= 0 && timeSecs > -60) {
         // It's currently 4:20 in some timezone
         messageType = "blazeItNow";
-        currentSeed = seed; // Re-initialize for message selection
         messageLinks = blazeItMessages[Math.floor(seededRandom() * blazeItMessages.length)];
-    } else if (timeMins <= WARNING_MINS && timeMins > 0) {
+    } else if (timeMins <= WARNING_MINs && timeMins > 0) {
         // It's in the warning window
         messageType = "blazeItWarning";
-        currentSeed = seed; // Re-initialize for message selection
         messageLinks = blazeItMessages[Math.floor(seededRandom() * blazeItMessages.length)];
+    } else {
+        // Otherwise, it's a regular "nextBlaze" message
+        messageLinks = nextBlazeMessages[Math.floor(seededRandom() * nextBlazeMessages.length)];
     }
 
     return {
@@ -165,7 +168,7 @@ exports.handler = async (event, context) => {
             timeRemainingMinutes: timeMins,
             location: location,
             messageType: messageType,
-            messageLinks: messageLinks,
+            messageLinks: messageLinks, // This will now be correctly assigned
             rawTimeMinsLink: timeMinsLink, // For debugging/displaying raw links
             rawLocationLink: locationLink // For debugging/displaying raw links
         }),
